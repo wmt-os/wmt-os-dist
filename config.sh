@@ -1,0 +1,6 @@
+# WMT OS Packages Build Settings
+#
+# Copyright (C) 2026 Logan Russell <me@lrussell.net>
+
+export BUILDER_NAME="${BUILDER_NAME:-WMT OS Builder}"
+export BUILDER_EMAIL="${BUILDER_EMAIL:-root@wmt-os.org}"
