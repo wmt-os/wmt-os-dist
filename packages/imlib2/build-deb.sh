@@ -10,7 +10,7 @@ set -eu
 
 SRC=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 OUT=${OUT:-$SRC/dist}
-. "$SRC"/../config.sh
+. "$SRC"/../../config.sh
 
 WMTOS_REV=1
 DCH_MSG="Fix PNG unaligned access SIGSEGV on armel by building with --enable-packing."

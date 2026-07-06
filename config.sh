@@ -1,4 +1,4 @@
-# WMT OS Packages Build Settings
+# WMT OS Dist Build Settings
 #
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 

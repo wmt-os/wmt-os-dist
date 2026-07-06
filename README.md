@@ -1,8 +1,8 @@
-# WMT OS Packages
+# WMT OS Dist
 
-External packages and publisher for the [WMT OS](https://github.com/wmt-os/wmt-os) APT repository at [apt.wmt-os.org](https://apt.wmt-os.org/).
+Publishing tools and external packages for the [WMT OS](https://github.com/wmt-os/wmt-os) APT repository at [apt.wmt-os.org](https://apt.wmt-os.org/).
 
-The core build system produces the internal packages (kernel, metapackage, `wmt-boot`, `wmt-os-base`). This repository carries additional external packages, plus `publish-deb.sh`, which is the APT repository publishing tool. Each package directory is self-contained, with its own `build-deb.sh`.
+The core build system produces the internal packages (kernel, metapackage, `wmt-boot`, `wmt-os-base`). This repository carries `publish-deb.sh`, the APT repository publisher, plus external packages under `packages/`. Each package directory is self-contained, with its own `build-deb.sh`.
 
 ## Versioning
 
