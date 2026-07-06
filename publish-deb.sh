@@ -1,7 +1,11 @@
 #!/bin/bash
-# Publish debs to the apt archive: rsync in, gate on the version grammar, prune,
-# reindex, sign, rsync out. Stateless -- the published pool is the only ledger.
-# No arguments just reindexes and re-signs; nothing is ever removed by it.
+# WMT OS Package Publisher
+#
+# Publish debs to the APT repository: rsync in, validate, prune, reindex, sign, rsync out.
+#
+# Usage:
+#   ./publish-deb.sh path/to/*.deb    # Validate and publish
+#   ./publish-deb.sh                  # Reindex and sign (non-destructive / initialize empty repo)
 #
 # Requires: apt-utils dpkg gnupg rsync
 #
@@ -19,9 +23,9 @@ DIST="$MIRROR/dists/trixie"
 
 hex12() { [[ $1 =~ ^[0-9a-f]{12}$ ]]; }
 
-exec 9<"$0"; flock 9 # one publish at a time
+exec 9<"$0"; flock 9
 
-# Pull the archive; the remote is the truth
+# Sync from remote (authoritative)
 if ! rsync -a --delete "$REMOTE/" "$MIRROR/" 2>/dev/null; then
 	case $REMOTE in
 	*:*) echo "publish-deb: cannot sync from $REMOTE" >&2; exit 1 ;;
@@ -29,7 +33,7 @@ if ! rsync -a --delete "$REMOTE/" "$MIRROR/" 2>/dev/null; then
 fi
 mkdir -p "$POOL" "$DIST/main/binary-armel"
 
-# The pool in one scan: the highest published version of every package
+# Map packages to highest published version from pool
 declare -A have
 for f in "$POOL"/*.deb; do
 	[ -e "$f" ] || break
@@ -39,7 +43,7 @@ for f in "$POOL"/*.deb; do
 	fi
 done
 
-# Gate every deb; refuse the whole run before touching the archive if any fails
+# Validate all debs; abort before touching archive on error
 publish=() err=
 for deb in "$@"; do
 	read -r pkg ver < <(dpkg-deb -W "$deb")
@@ -64,15 +68,14 @@ for deb in "$@"; do
 		echo "error: $pkg $ver is older than published $cur" >&2; err=1
 	fi
 done
-[ -z "$err" ] || { echo "publish-deb: refused; the archive is untouched" >&2; exit 1; }
+[ -z "$err" ] || { echo "publish-deb: refused (archive untouched)" >&2; exit 1; }
 if [ $# -gt 0 ] && [ ${#publish[@]} -eq 0 ]; then
 	echo "nothing new to publish"; exit 0
 fi
 
 if [ ${#publish[@]} -gt 0 ]; then
 	cp "${publish[@]}" "$POOL/"
-	# Prune superseded versions, then GC content-addressed packages (-<12hex>,
-	# the kernels) that nothing in the pool depends on any more
+	# Prune superseded versions; GC content-addressed packages (12-hex hash, kernels)
 	for f in "$POOL"/*.deb; do
 		read -r pkg ver < <(dpkg-deb -W "$f")
 		[ "$ver" = "${have[$pkg]}" ] || { echo "prune: $pkg $ver"; rm "$f"; }
@@ -85,15 +88,15 @@ if [ ${#publish[@]} -gt 0 ]; then
 	done
 fi
 
-# Reindex, sign, push: pool additions, index swap, then deletions. The index push
-# compares content -- same-size regenerations fool rsync's quick check
+# Rebuild metadata and sign
 (cd "$MIRROR" && apt-ftparchive generate "$SRC/apt-ftparchive.conf" >/dev/null)
 gzip -9nc "$DIST/main/binary-armel/Packages" > "$DIST/main/binary-armel/Packages.gz"
 (cd "$MIRROR" && apt-ftparchive -c "$SRC/apt-ftparchive.conf" release dists/trixie) > "$DIST/Release"
 gpg --batch --yes -u "$KEYID" --clearsign -o "$DIST/InRelease" "$DIST/Release"
 
+# Push to remote: new pool, index swap, then delete old
 case $REMOTE in *:*) ;; *) mkdir -p "$REMOTE" ;; esac
 rsync -a "$MIRROR/pool" "$REMOTE/"
-rsync -ac --delete "$MIRROR/dists" "$REMOTE/"
+rsync -ac --delete "$MIRROR/dists" "$REMOTE/" # -c: regenerated indexes fool quick check
 rsync -a --delete "$MIRROR/pool" "$REMOTE/"
 echo "publish-deb: archive updated at $REMOTE"
