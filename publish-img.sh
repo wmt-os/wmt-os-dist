@@ -17,8 +17,9 @@ export LC_ALL=C
 SRC=$(cd "$(dirname "$0")" && pwd)
 . "$SRC/config.sh"
 
-LATEST=$(mktemp -d)
-trap 'rm -rf "$LATEST"' EXIT
+LATEST="$(mktemp -d)/latest"
+trap 'rm -rf "${LATEST%/*}"' EXIT
+mkdir "$LATEST"
 
 imgname() { [[ $1 =~ ^[^[:space:]]+-[0-9]{8}_[0-9]{6}(\.img\.[a-z0-9]+)$ ]]; }
 
