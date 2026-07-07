@@ -2,7 +2,7 @@
 # Build the imlib2 armel deb packages
 #
 # Output: ./dist/*.deb (override: OUT=)
-# Requires: mmdebstrap qemu-user-binfmt
+# Requires: mmdebstrap qemu-user-binfmt uidmap
 #
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
