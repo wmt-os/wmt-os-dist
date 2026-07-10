@@ -1,0 +1,40 @@
+Description: Default the login logo to the WMT OS pixmaps
+ Ship wmt-os.xpm and wmt-os-bw.xpm alongside the existing set and point
+ the Xresources defaults at them via the pixmap configure options.
+Author: Logan Russell <me@lrussell.net>
+--- a/debian/rules
++++ b/debian/rules
+@@ -24,8 +24,8 @@
+ 	--with-xdmscriptdir=\$${xdmconfigdir} \
+ 	--with-authdir=/var/lib/xdm \
+ 	--with-pixmapdir=/usr/share/X11/xdm/pixmaps \
+-	--with-color-pixmap=debian.xpm \
+-	--with-bw-pixmap=debianbw.xpm \
++	--with-color-pixmap=wmt-os.xpm \
++	--with-bw-pixmap=wmt-os-bw.xpm \
+ 	--with-systemdsystemunitdir \
+ 	--disable-xdm-auth \
+ 	--with-xft \
+@@ -107,9 +107,9 @@
+ 	install -d debian/tmp/usr/share/man/man5
+ 	install -m 644 debian/local/xdm.options.5 \
+ 	               debian/tmp/usr/share/man/man5/
+-	install -m 644 debian/local/debian.xpm \
++	install -m 644 debian/local/debian.xpm debian/local/wmt-os.xpm \
+ 	               debian/tmp/usr/share/X11/xdm/pixmaps/
+-	install -m 644 debian/local/debianbw.xpm \
++	install -m 644 debian/local/debianbw.xpm debian/local/wmt-os-bw.xpm \
+ 	               debian/tmp/usr/share/X11/xdm/pixmaps/
+ 	install -d debian/tmp/etc/insserv.conf.d
+ 	install -m 644 debian/xdm.insserv \
+--- a/debian/xdm.install
++++ b/debian/xdm.install
+@@ -17,6 +17,8 @@
+ usr/lib/X11/xdm/libXdmGreet.so
+ usr/share/X11/xdm/pixmaps/debianbw.xpm
+ usr/share/X11/xdm/pixmaps/debian.xpm
++usr/share/X11/xdm/pixmaps/wmt-os-bw.xpm
++usr/share/X11/xdm/pixmaps/wmt-os.xpm
+ usr/share/X11/xdm/pixmaps/xorg-bw.xpm
+ usr/share/X11/xdm/pixmaps/xorg.xpm
+ usr/share/man/man1/xdm.1

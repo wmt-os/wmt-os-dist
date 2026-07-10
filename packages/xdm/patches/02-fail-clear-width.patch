@@ -1,0 +1,28 @@
+Description: Clear only the fail message's own width when erasing it
+ The Xft path of RedrawFail() pre-clears the fail-message area with a
+ width of ERROR_W(), which includes LOGO_W() (logo width plus twice the
+ logo padding). The rectangle is centered for the string, so it
+ overshoots by half of LOGO_W() on each side and wipes the widget's
+ right frame bevel at fail-message height on every redraw. Clear the
+ string's own width instead.
+Author: Logan Russell <me@lrussell.net>
+--- a/greeter/Login.c
++++ b/greeter/Login.c
+@@ -624,7 +624,7 @@
+ #ifdef USE_XFT
+ 		    if (w->login.failUp == 0) {
+ 			XClearArea(XtDisplay(w), XtWindow(w), x, y - F_ASCENT(fail),
+-				   ERROR_W(w, start), FAIL_Y_INC(w), False);
++				   STRING_WIDTH(fail, start), FAIL_Y_INC(w), False);
+ 		    } else
+ #endif
+ 			DRAW_STRING (fail, x, y, start, strlen(start));
+@@ -645,7 +645,7 @@
+ #ifdef USE_XFT
+ 	if (w->login.failUp == 0) {
+ 	    XClearArea(XtDisplay(w), XtWindow(w), x, y - F_ASCENT(fail),
+-		       ERROR_W(w, w->login.fail), FAIL_Y_INC(w), False);
++		       STRING_WIDTH(fail, w->login.fail), FAIL_Y_INC(w), False);
+ 	} else
+ #endif
+ 	    DRAW_STRING (fail, x, y, w->login.fail, strlen (w->login.fail));
