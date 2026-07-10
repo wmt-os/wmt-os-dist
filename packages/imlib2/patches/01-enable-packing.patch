@@ -1,0 +1,18 @@
+Description: Enable struct packing to fix unaligned PNG chunk reads on ARMv5
+ The PNG loader parses chunk headers at unaligned offsets. Without
+ --enable-packing the compiler assumes natural alignment and emits word
+ loads, which on ARMv5 silently rotate the loaded data instead of trapping,
+ corrupting offsets and crashing consumers such as icewm with SIGSEGV.
+ Packing the structures makes the compiler use byte-wise loads.
+Author: Logan Russell <me@lrussell.net>
+--- a/debian/rules
++++ b/debian/rules
+@@ -5,7 +5,7 @@
+ 	dh $@
+ 
+ override_dh_auto_configure:
+-	dh_auto_configure -- --enable-mmx=no --disable-amd64 --enable-rtld-local-support
++	dh_auto_configure -- --enable-mmx=no --disable-amd64 --enable-rtld-local-support --enable-packing
+ 
+ override_dh_auto_install:
+ 	dh_auto_install

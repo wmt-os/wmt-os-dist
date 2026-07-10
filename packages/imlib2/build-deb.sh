@@ -18,14 +18,24 @@ DCH_MSG="Fix PNG unaligned access SIGSEGV on armel by building with --enable-pac
 mkdir -p "$OUT"
 rm -f "$OUT"/*.deb
 mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
-	--chrooted-customize-hook="apt-get source imlib2 && cd imlib2-* &&
-		sed -i 's/--enable-rtld-local-support/& --enable-packing/' debian/rules &&
-		export DEBFULLNAME=\"$BUILDER_NAME\" DEBEMAIL=\"$BUILDER_EMAIL\" &&
-		dch -v \"\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV\" -D trixie \"$DCH_MSG\" &&
-		apt-get -y --no-install-recommends build-dep ./ && dpkg-buildpackage -b -uc -us &&
-		mkdir /out && mv /*.deb /out/" \
+	--customize-hook="copy-in $SRC/patches /" \
+	--chrooted-customize-hook="$(cat <<-EOF
+		set -e
+
+		apt-get source imlib2
+		cd imlib2-*
+		patch -p1 < /patches/01-enable-packing.patch
+
+		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
+		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie "$DCH_MSG"
+		apt-get -y --no-install-recommends build-dep ./
+		dpkg-buildpackage -b -uc -us
+
+		mkdir /out
+		mv /*.deb /out/
+		EOF
+	)" \
 	--customize-hook="sync-out /out $OUT" \
-	trixie /dev/null \
-	"https://deb.debian.org/debian" "deb-src https://deb.debian.org/debian trixie main"
+	trixie /dev/null "$SRC"/../../debian.sources
 
 ls -1 "$OUT"/*.deb
