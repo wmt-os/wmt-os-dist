@@ -1,0 +1,24 @@
+Description: Register an x-www-browser alternative
+ Debian's packaging registers only the netsurf-browser alternative, so
+ nothing resolving the system browser finds netsurf.
+Author: Logan Russell <me@lrussell.net>
+--- a/debian/netsurf-gtk.postinst
++++ b/debian/netsurf-gtk.postinst
+@@ -3,6 +3,7 @@
+ 
+ if [ "$1" = "configure" ]; then
+     update-alternatives --install /usr/bin/netsurf netsurf-browser /usr/bin/netsurf-gtk 80 --slave /usr/share/man/man1/netsurf.1.gz netsurf-manual /usr/share/man/man1/netsurf-gtk.1.gz
++    update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/bin/netsurf-gtk 50 --slave /usr/share/man/man1/x-www-browser.1.gz x-www-browser.1.gz /usr/share/man/man1/netsurf-gtk.1.gz
+ fi
+ 
+ #DEBHELPER#
+--- a/debian/netsurf-gtk.prerm
++++ b/debian/netsurf-gtk.prerm
+@@ -3,6 +3,7 @@
+ 
+ if [ "$1" != "upgrade" ]; then
+     update-alternatives --remove netsurf-browser /usr/bin/netsurf-gtk
++    update-alternatives --remove x-www-browser /usr/bin/netsurf-gtk
+ fi
+ 
+ #DEBHELPER#

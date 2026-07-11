@@ -1,0 +1,40 @@
+Description: Build the GTK frontend against GTK 2
+ GTK 3 is too heavy on ARMv5 because it renders client-side; the gtk2
+ target retains the server-side rendering that X11 can accelerate.
+Author: Logan Russell <me@lrussell.net>
+--- a/debian/rules
++++ b/debian/rules
+@@ -12,12 +12,12 @@
+ 	dh $@
+ 
+ override_dh_auto_build:
+-	dh_auto_build -- V=1 PREFIX=/usr TARGET=gtk3
++	dh_auto_build -- V=1 PREFIX=/usr TARGET=gtk2
+ 	dh_auto_build -- V=1 PREFIX=/usr TARGET=framebuffer
+ 
+ override_dh_auto_install:
+-	dh_auto_install -- PREFIX=/usr TARGET=gtk3
+-	mv debian/tmp/usr/bin/netsurf-gtk3 debian/tmp/usr/bin/netsurf-gtk
++	dh_auto_install -- PREFIX=/usr TARGET=gtk2
++	mv debian/tmp/usr/bin/netsurf-gtk2 debian/tmp/usr/bin/netsurf-gtk
+ 	mkdir -p debian/netsurf-gtk/usr/share/pixmaps
+ 	convert netsurf/frontends/gtk/res/netsurf.xpm -resize \!32x\!32 debian/netsurf-gtk/usr/share/pixmaps/netsurf.xpm
+ 	convert netsurf/frontends/gtk/res/netsurf.xpm debian/netsurf-gtk/usr/share/pixmaps/netsurf.png
+@@ -26,5 +26,5 @@
+ 	ln -s /etc/ssl/certs/ca-certificates.crt debian/tmp/usr/share/netsurf/ca-bundle.txt
+ 
+ override_dh_auto_clean:
+-	dh_auto_clean -- PREFIX=/usr TARGET=gtk3
++	dh_auto_clean -- PREFIX=/usr TARGET=gtk2
+ 	dh_auto_clean -- PREFIX=/usr TARGET=framebuffer
+--- a/debian/control
++++ b/debian/control
+@@ -7,7 +7,7 @@
+  debhelper (>= 11~),
+  libcurl4-openssl-dev | libcurl3-dev,
+  libpng-dev,
+- libgtk-3-dev,
++ libgtk2.0-dev,
+  flex,
+  bison,
+  libhtml-parser-perl,
