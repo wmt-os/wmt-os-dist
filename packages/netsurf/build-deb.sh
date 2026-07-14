@@ -10,7 +10,6 @@ set -eu
 . "$(dirname "$0")/../lib.sh"
 
 WMTOS_REV=1
-DCH_MSG="Build the GTK frontend against GTK 2; register an x-www-browser alternative."
 
 mkdir -p "$OUT"
 rm -f "$OUT"/*.deb
@@ -25,7 +24,11 @@ mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
 		patch -p1 < /patches/02-x-www-browser.patch
 
 		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie "$DCH_MSG"
+		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie \
+			"Build the GTK frontend against GTK 2."
+		dch -a "Register an x-www-browser alternative."
+		dch -a "Provide pixmaps under the binary name."
+
 		apt-get -y --no-install-recommends build-dep ./
 		dpkg-buildpackage -b -uc -us -j$(nproc)
 

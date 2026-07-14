@@ -10,7 +10,6 @@ set -eu
 . "$(dirname "$0")/../lib.sh"
 
 WMTOS_REV=1
-DCH_MSG="Fix PNG unaligned access SIGSEGV on armel by building with --enable-packing."
 
 mkdir -p "$OUT"
 rm -f "$OUT"/*.deb
@@ -24,7 +23,9 @@ mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
 		patch -p1 < /patches/01-enable-packing.patch
 
 		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie "$DCH_MSG"
+		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie \
+			"Fix PNG unaligned access SIGSEGV on armel via --enable-packing."
+
 		apt-get -y --no-install-recommends build-dep ./
 		dpkg-buildpackage -b -uc -us -j$(nproc)
 

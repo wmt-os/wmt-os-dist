@@ -10,7 +10,6 @@ set -eu
 . "$(dirname "$0")/../lib.sh"
 
 WMTOS_REV=1
-DCH_MSG="Default the login logo to WMT OS; fix the greeter erasing the frame bevel."
 
 mkdir -p "$OUT"
 rm -f "$OUT"/*.deb
@@ -29,7 +28,10 @@ mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
 		echo 02-fail-clear-width.patch >> debian/patches/series
 
 		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie "$DCH_MSG"
+		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie \
+			"Default the login logo to WMT OS."
+		dch -a "Fix the greeter erasing the frame bevel."
+
 		apt-get -y --no-install-recommends build-dep ./
 		dpkg-buildpackage -b -uc -us -j$(nproc)
 
