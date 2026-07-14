@@ -1,6 +1,8 @@
 Description: Register an x-www-browser alternative
  Debian's packaging registers only the netsurf-browser alternative, so
- nothing resolving the system browser finds netsurf.
+ nothing resolving the system browser finds netsurf. Ship the pixmaps
+ under the netsurf-gtk binary name too, so launchers that derive an
+ icon from the resolved command find one.
 Author: Logan Russell <me@lrussell.net>
 --- a/debian/netsurf-gtk.postinst
 +++ b/debian/netsurf-gtk.postinst
@@ -22,3 +24,8 @@ Author: Logan Russell <me@lrussell.net>
  fi
  
  #DEBHELPER#
+--- /dev/null
++++ b/debian/netsurf-gtk.links
+@@ -0,0 +1,2 @@
++usr/share/pixmaps/netsurf.png usr/share/pixmaps/netsurf-gtk.png
++usr/share/pixmaps/netsurf.xpm usr/share/pixmaps/netsurf-gtk.xpm
