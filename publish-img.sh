@@ -1,11 +1,10 @@
 #!/bin/bash
 # WMT OS Image Publisher
 #
-# Publish disk images to the release site: list remote, validate, upload, relink latest
+# Publish disk images to the release site: list remote, validate, upload
 #
 # Usage:
 #   ./publish-img.sh path/to/*.img.xz    # Validate and publish (including .sha256)
-#   ./publish-img.sh                     # Relink latest (non-destructive / initialize empty)
 #
 # Requires: rsync
 #
@@ -17,9 +16,7 @@ export LC_ALL=C
 SRC=$(cd "$(dirname "$0")" && pwd)
 . "$SRC/config.sh"
 
-LATEST="$(mktemp -d)/latest"
-trap 'rm -rf "${LATEST%/*}"' EXIT
-mkdir "$LATEST"
+[ $# -gt 0 ] || exit 1
 
 imgname() { [[ $1 =~ ^[^[:space:]]+-[0-9]{8}_[0-9]{6}(\.img\.[a-z0-9]+)$ ]]; }
 
@@ -55,18 +52,6 @@ for img in "$@"; do
 done
 [ -z "$err" ] || { echo "publish-img: refused (site untouched)" >&2; exit 1; }
 
-# Link latest at the newest image per stem (the name with its datestamp stripped)
-names=$(printf '%s\n' "${published[@]-}" "${@##*/}" | sort -u)
-declare -A newest
-for n in $names; do
-	newest[${n%-*}]=$n
-done
-
-for p in "${!newest[@]}"; do
-	imgname "${newest[$p]}" # recapture the suffix
-	ln -s "../${newest[$p]}" "$LATEST/$p${BASH_REMATCH[1]}"
-done
-
 # Queue uploads with their checksums; a republished name must match the published content
 upload=() err=
 for img in "$@"; do
@@ -85,10 +70,9 @@ for img in "$@"; do
 done
 [ -z "$err" ] || { echo "publish-img: refused (site untouched)" >&2; exit 1; }
 
-# Push: images first so latest never dangles, then the link swap
+# Push to the release site
 case $RELEASES in *:*) ;; *) mkdir -p "$RELEASES" ;; esac
 if [ ${#upload[@]} -gt 0 ]; then
 	rsync -a "${upload[@]}" "$RELEASES/"
 fi
-rsync -a --delete "$LATEST/" "$RELEASES/latest/"
 echo "publish-img: site updated at $RELEASES"

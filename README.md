@@ -40,7 +40,6 @@ Requires: `rsync`
 
 ```bash
 ./publish-img.sh path/to/*.img.xz    # Validate and publish (including .sha256)
-./publish-img.sh                     # Relink latest (non-destructive / initialize empty)
 ```
 
-The published site is the authority, listed rather than mirrored, and only new images transfer. Images publish alongside their `.sha256` from the build, checked and carried verbatim. Published names are immutable; an identical republish is skipped, and a differing one aborts the whole run untouched. `latest/` holds a symlink per image name, datestamp stripped, pointing at the newest. Nothing is pruned; deletion is manual, and a no-argument run relinks `latest`.
+The published site is the authority, listed rather than mirrored, and only new images transfer. Images publish alongside their `.sha256` from the build, checked and carried verbatim. Published names are immutable; an identical republish is skipped, and a differing one aborts the whole run untouched. Nothing is pruned; deletion is manual.
