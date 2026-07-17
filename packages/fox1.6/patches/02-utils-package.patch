@@ -1,0 +1,80 @@
+Description: Build and package the bundled utility applications
+ Debian builds only the FOX library and drops the applications shipped
+ in the source tree. Restore the application subdirectories to the
+ build and package Adie, Calculator and ShutterBug as fox1.6-utils,
+ each with a desktop entry and its application icon.
+Author: Logan Russell <me@lrussell.net>
+--- a/configure.ac
++++ b/configure.ac
+@@ -319,5 +319,8 @@
+ doc/art/Makefile
+ doc/screenshots/Makefile
+ tests/Makefile
++adie/Makefile
++shutterbug/Makefile
++calculator/Makefile
+ fox-config
+ fox.pc)
+--- a/debian/adie.desktop
++++ b/debian/adie.desktop
+@@ -0,0 +1,6 @@
++[Desktop Entry]
++Type=Application
++Name=Adie
++Exec=adie-1.6
++Icon=adie
++Categories=Utility;TextEditor;
+--- a/debian/calculator.desktop
++++ b/debian/calculator.desktop
+@@ -0,0 +1,6 @@
++[Desktop Entry]
++Type=Application
++Name=FOX Calculator
++Exec=calculator-1.6
++Icon=calculator
++Categories=Utility;Calculator;
+--- a/debian/control
++++ b/debian/control
+@@ -76,3 +76,10 @@
+  .
+  This package contains documentation for development of applications
+  using the FOX Toolkit.
++
++Package: fox1.6-utils
++Architecture: any
++Depends: ${shlibs:Depends}, ${misc:Depends}
++Description: FOX toolkit utility applications
++ The utility programs bundled with the FOX 1.6 toolkit: the Adie
++ text editor, FOX Calculator and the ShutterBug screen capture tool.
+--- a/debian/fox1.6-utils.install
++++ b/debian/fox1.6-utils.install
+@@ -0,0 +1,9 @@
++debian/adie.desktop usr/share/applications
++debian/calculator.desktop usr/share/applications
++debian/shutterbug.desktop usr/share/applications
++debian/adie.xpm usr/share/pixmaps
++debian/calculator.xpm usr/share/pixmaps
++debian/shutterbug.xpm usr/share/pixmaps
++usr/bin/adie-1.6
++usr/bin/calculator-1.6
++usr/bin/shutterbug-1.6
+--- a/debian/shutterbug.desktop
++++ b/debian/shutterbug.desktop
+@@ -0,0 +1,6 @@
++[Desktop Entry]
++Type=Application
++Name=ShutterBug
++Exec=shutterbug-1.6
++Icon=shutterbug
++Categories=Graphics;
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -3,7 +3,7 @@
+ # For non-gcc compilers, change the options to "no-dependencies"
+ AUTOMAKE_OPTIONS = foreign dist-zip
+ 
+-SUBDIRS    = utils include src chart doc tests
++SUBDIRS    = utils include src chart doc tests shutterbug adie calculator
+ EXTRA_DIST = ADDITIONS AUTHORS INSTALL LICENSE LICENSE_ADDENDUM TRACING README fox.lsm index.html aclocal.m4
+ 
+ bin_SCRIPTS = fox-config

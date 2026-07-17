@@ -1,0 +1,25 @@
+Description: Blank freshly exposed strips when scrolling
+ FOX copies the scrolled contents and defers repainting the newly
+ exposed strip to idle time, so on this single-buffered display the
+ stale duplicate left behind stays visible until the repaint lands.
+ Fill the strip with the widget background right after the copy, so
+ the duplicate is overwritten at once while the repaint stays deferred.
+Author: Logan Russell <me@lrussell.net>
+--- a/src/FXWindow.cpp
++++ b/src/FXWindow.cpp
+@@ -2260,11 +2260,15 @@
+       // BLIT the contents
+       XCopyArea(DISPLAY(getApp()),xid,xid,(GC)visual->scrollgc,fx,fy,w-ew,h-eh,tx,ty);
+ 
++      XSetForeground(DISPLAY(getApp()),(GC)visual->scrollgc,visual->getPixel(backColor));
++
+       // Post additional rectangles for the uncovered areas
+       if(dy){
++        XFillRectangle(DISPLAY(getApp()),xid,(GC)visual->scrollgc,x,ey,w,eh);
+         getApp()->addRepaint(xid,x,ey,w,eh,1);
+         }
+       if(dx){
++        XFillRectangle(DISPLAY(getApp()),xid,(GC)visual->scrollgc,ex,y,ew,h);
+         getApp()->addRepaint(xid,ex,y,ew,h,1);
+         }
+       }

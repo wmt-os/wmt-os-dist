@@ -1,0 +1,17 @@
+Description: Do not treat format-security as an error in the applications
+ The bundled applications pass translated strings as printf-style format
+ arguments, which trips -Werror=format-security under the default
+ hardening flags. The strings are static literals, so relax the error
+ to a warning for this build.
+Author: Logan Russell <me@lrussell.net>
+--- a/debian/rules
++++ b/debian/rules
+@@ -15,6 +15,8 @@
+ export DEB_CPPFLAGS_MAINT_APPEND = -D_DEBDATE_=\"$(shell \
+ 	LC_ALL=C date -u -d @$(SOURCE_DATE_EPOCH) +%b-%d-%Y)\"
+ 
++export DEB_CXXFLAGS_MAINT_APPEND = -Wno-error=format-security
++
+ %:
+ 	dh $@
+ 

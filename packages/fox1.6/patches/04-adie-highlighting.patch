@@ -1,0 +1,56 @@
+Description: Enable Adie's syntax highlighting out of the box
+ Adie ships a syntax file but no default colors, so highlighting stays
+ invisible until the user configures every style by hand. Install the
+ syntax file where Adie looks for it, and provide a default color
+ scheme in the system registry, which a user's own settings override.
+Author: Logan Russell <me@lrussell.net>
+--- a/debian/fox1.6-utils.install
++++ b/debian/fox1.6-utils.install
+@@ -7,3 +7,5 @@
+ usr/bin/adie-1.6
+ usr/bin/calculator-1.6
+ usr/bin/shutterbug-1.6
++adie/Adie.stx usr/bin
++debian/foxrc/Adie etc/foxrc
+--- a/debian/foxrc/Adie
++++ b/debian/foxrc/Adie
+@@ -0,0 +1,39 @@
++[STYLE]
++Attribute=blue,None,None,None,None,None,None,0
++CComment=darkgreen,None,None,None,None,None,None,0
++CDocComment=darkgreen,None,None,None,None,None,None,0
++Char=blue,None,None,None,None,None,None,0
++CharEscape=fuchsia,None,None,None,None,None,None,0
++Command=blue,None,None,None,None,None,None,0
++Comment=darkgreen,None,None,None,None,None,None,0
++CommentContinuation=darkgreen,None,None,None,None,None,None,0
++ControlEscape=fuchsia,None,None,None,None,None,None,0
++CPPComment=darkgreen,None,None,None,None,None,None,0
++CPPDocComment=darkgreen,None,None,None,None,None,None,0
++DoubleString=blue,None,None,None,None,None,None,0
++Escape=red,None,None,None,None,None,None,0
++FIXME=fuchsia,None,None,None,None,None,None,0
++Format=fuchsia,None,None,None,None,None,None,0
++HexEscape=fuchsia,None,None,None,None,None,None,0
++Instruction=red,None,None,None,None,None,None,0
++Keyword=red,None,None,None,None,None,None,0
++LineComment=darkgreen,None,None,None,None,None,None,0
++Macro=blue,None,None,None,None,None,None,0
++MultiLineComment=darkgreen,None,None,None,None,None,None,0
++Number=blue,None,None,None,None,None,None,0
++OctalEscape=fuchsia,None,None,None,None,None,None,0
++Operator=red,None,None,None,None,None,None,0
++PPBlocked=gray,None,None,None,None,None,None,0
++PPSubblock=gray,None,None,None,None,None,None,0
++Preprocessor=blue,None,None,None,None,None,None,0
++PreprocessorContinuation=blue,None,None,None,None,None,None,0
++RegistryEntry=darkgreen,None,None,None,None,None,None,0
++RegistryEquals=red,None,None,None,None,None,None,0
++RegistrySection=orange,None,None,None,None,None,None,0
++RegistryString=blue,None,None,None,None,None,None,0
++RegistryValue=blue,None,None,None,None,None,None,0
++ShellResult=red,None,None,None,None,None,None,0
++SingleString=blue,None,None,None,None,None,None,0
++String=blue,None,None,None,None,None,None,0
++Type=blue,None,None,None,None,None,None,0
++Variable=yellow,None,None,None,None,None,None,0
