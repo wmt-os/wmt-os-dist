@@ -24,7 +24,8 @@ mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
 		patch -p1 < /patches/02-playing-defaults.patch
 
 		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie \
+		v=\$(dpkg-parsechangelog -S Version); base=\${v%%+deb[0-9]*}
+		dch -v "\$base+wmtos$WMTOS_REV\${v#\$base}" -D trixie \
 			"Blank freshly exposed strips when scrolling to stop duplication."
 		dch -a "Disable the playing view's cover art and lyrics by default."
 

@@ -28,7 +28,8 @@ mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
 		echo 02-fail-clear-width.patch >> debian/patches/series
 
 		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie \
+		v=\$(dpkg-parsechangelog -S Version); base=\${v%%+deb[0-9]*}
+		dch -v "\$base+wmtos$WMTOS_REV\${v#\$base}" -D trixie \
 			"Default the login logo to WMT OS."
 		dch -a "Fix the greeter erasing the frame bevel."
 

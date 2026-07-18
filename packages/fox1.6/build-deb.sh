@@ -34,7 +34,8 @@ mmdebstrap --variant=buildd --architectures=armel --include="devscripts imagemag
 		magick shutterbug/shutterbug.gif debian/shutterbug.xpm
 
 		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie \
+		v=\$(dpkg-parsechangelog -S Version); base=\${v%%+deb[0-9]*}
+		dch -v "\$base+wmtos$WMTOS_REV\${v#\$base}" -D trixie \
 			"Blank freshly exposed strips when scrolling to stop duplication."
 		dch -a "Backport the 1.7 wheel timing so painting keeps pace with the glide."
 		dch -a "Repaint the selection as it changes to keep highlighting current."

@@ -23,7 +23,8 @@ mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
 		patch -p1 < /patches/01-enable-packing.patch
 
 		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie \
+		v=\$(dpkg-parsechangelog -S Version); base=\${v%%+deb[0-9]*}
+		dch -v "\$base+wmtos$WMTOS_REV\${v#\$base}" -D trixie \
 			"Fix PNG unaligned access SIGSEGV on armel via --enable-packing."
 
 		apt-get -y --no-install-recommends build-dep ./

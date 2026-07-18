@@ -24,7 +24,8 @@ mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
 		patch -p1 < /patches/02-x-www-browser.patch
 
 		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		dch -v "\$(dpkg-parsechangelog -S Version)+wmtos$WMTOS_REV" -D trixie \
+		v=\$(dpkg-parsechangelog -S Version); base=\${v%%+deb[0-9]*}
+		dch -v "\$base+wmtos$WMTOS_REV\${v#\$base}" -D trixie \
 			"Build the GTK frontend against GTK 2."
 		dch -a "Register an x-www-browser alternative."
 		dch -a "Provide pixmaps under the binary name."
