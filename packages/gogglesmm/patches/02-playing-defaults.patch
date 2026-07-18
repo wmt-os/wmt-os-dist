@@ -1,0 +1,18 @@
+Description: Disable the playing view's cover art and lyrics by default
+ Rendering cover art and lyrics is more than this hardware comfortably
+ carries, so fresh configurations start with both panels off. Either
+ can still be enabled in the preferences, and a saved choice is kept.
+Author: Logan Russell <me@lrussell.net>
+--- a/src/GMPreferences.h
++++ b/src/GMPreferences.h
+@@ -129,8 +129,8 @@
+   FXbool gui_toolbar_showlabels         = true;
+   FXbool gui_toolbar_labelsabove        = true;
+   FXbool gui_show_browser_icons         = true;
+-  FXbool gui_show_playing_albumcover    = true;
+-  FXbool gui_show_playing_lyrics        = true;
++  FXbool gui_show_playing_albumcover    = false;
++  FXbool gui_show_playing_lyrics        = false;
+   FXbool gui_tray_icon                  = false;
+   FXbool gui_tray_icon_disabled         = false;
+   FXbool gui_show_playing_titlebar      = false;
