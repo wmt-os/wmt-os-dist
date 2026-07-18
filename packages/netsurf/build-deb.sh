@@ -11,33 +11,11 @@ set -eu
 
 WMTOS_REV=1
 
-mkdir -p "$OUT"
-rm -f "$OUT"/*.deb
-mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
-	--customize-hook="copy-in $SRC/patches /" \
-	--chrooted-customize-hook="$(cat <<-EOF
-		set -e
+build_deb netsurf <<-'EOF'
+	patch -p1 < /input/01-gtk2.patch
+	patch -p1 < /input/02-x-www-browser.patch
 
-		apt-get source netsurf
-		cd netsurf-*
-		patch -p1 < /patches/01-gtk2.patch
-		patch -p1 < /patches/02-x-www-browser.patch
-
-		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		v=\$(dpkg-parsechangelog -S Version); base=\${v%%+deb[0-9]*}
-		dch -v "\$base+wmtos$WMTOS_REV\${v#\$base}" -D trixie \
-			"Build the GTK frontend against GTK 2."
-		dch -a "Register an x-www-browser alternative."
-		dch -a "Provide pixmaps under the binary name."
-
-		apt-get -y --no-install-recommends build-dep ./
-		dpkg-buildpackage -b -uc -us -j$(nproc)
-
-		mkdir /out
-		mv /*.deb /out/
-		EOF
-	)" \
-	--customize-hook="sync-out /out $OUT" \
-	trixie /dev/null "$SRC"/../debian.sources
-
-ls -1 "$OUT"/*.deb
+	dch -v "$WMTOS_VERSION" -D trixie \
+		"Build the GTK frontend against GTK 2."
+	dch -a "Register an x-www-browser alternative with matching pixmaps."
+	EOF

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build the gogglesmm armel deb package
+# Build the gogglesmm armel deb packages
 #
 # Output: ./dist/*.deb (override: OUT=)
 # Requires: mmdebstrap qemu-user-binfmt uidmap
@@ -11,32 +11,11 @@ set -eu
 
 WMTOS_REV=1
 
-mkdir -p "$OUT"
-rm -f "$OUT"/*.deb
-mmdebstrap --variant=buildd --architectures=armel --include="devscripts" \
-	--customize-hook="copy-in $SRC/patches /" \
-	--chrooted-customize-hook="$(cat <<-EOF
-		set -e
+build_deb gogglesmm <<-'EOF'
+	patch -p1 < /input/01-scroll-blank.patch
+	patch -p1 < /input/02-playing-defaults.patch
 
-		apt-get source gogglesmm
-		cd gogglesmm-*
-		patch -p1 < /patches/01-scroll-blank.patch
-		patch -p1 < /patches/02-playing-defaults.patch
-
-		export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
-		v=\$(dpkg-parsechangelog -S Version); base=\${v%%+deb[0-9]*}
-		dch -v "\$base+wmtos$WMTOS_REV\${v#\$base}" -D trixie \
-			"Blank freshly exposed strips when scrolling to stop duplication."
-		dch -a "Disable the playing view's cover art and lyrics by default."
-
-		apt-get -y --no-install-recommends build-dep ./
-		dpkg-buildpackage -b -uc -us -j$(nproc)
-
-		mkdir /out
-		mv /*.deb /out/
-		EOF
-	)" \
-	--customize-hook="sync-out /out $OUT" \
-	trixie /dev/null "$SRC"/../debian.sources
-
-ls -1 "$OUT"/*.deb
+	dch -v "$WMTOS_VERSION" -D trixie \
+		"Blank freshly exposed strips when scrolling to stop duplication."
+	dch -a "Disable the playing view's cover art and lyrics by default."
+	EOF
