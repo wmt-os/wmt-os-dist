@@ -21,6 +21,8 @@ build_deb() {
 			cd $1-*
 
 			export DEBFULLNAME="$BUILDER_NAME" DEBEMAIL="$BUILDER_EMAIL"
+			sed -i "s/^Maintainer:/Maintainer: $BUILDER_NAME <$BUILDER_EMAIL>\nXSBC-Original-Maintainer:/" debian/control
+			sed -i "s/^Uploaders:/XSBC-Original-Uploaders:/" debian/control
 			v=\$(dpkg-parsechangelog -S Version); base=\${v%%+deb[0-9]*}
 			WMTOS_VERSION=\$base+wmtos$WMTOS_REV\${v#\$base}
 
