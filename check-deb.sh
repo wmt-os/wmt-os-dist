@@ -16,7 +16,8 @@ export LC_ALL=C
 shopt -s extglob
 
 SRC=$(cd "$(dirname "$0")" && pwd)
-INDEX="${INDEX:-https://apt.wmt-os.org/dists/trixie/main/binary-armel/Packages}"
+RELEASE="${RELEASE:-trixie}"
+INDEX="${INDEX:-https://apt.wmt-os.org/dists/$RELEASE/main/binary-armel/Packages}"
 
 die() { echo "check-deb: $*" >&2; exit 1; }
 
@@ -37,29 +38,31 @@ while IFS='|' read -r _ s p v _; do
 done < <(tbl-dctrl -c Source -c Package -c Version <<<"$index")
 [ ${#pub[@]} -gt 0 ] || die "no wmt-os packages in index"
 
-# Package recipes on disk
+# Package recipes on disk, with the suite each builds from
 declare -A rec=()
 for f in "$SRC"/packages/*/build-deb.sh; do
 	[ -e "$f" ] || break
-	f=${f%/build-deb.sh}; rec[${f##*/}]=1
+	u=$(awk '$1 == "build_deb" && $3 ~ /^[a-z]/ { print $3; exit }' "$f")
+	f=${f%/build-deb.sh}; rec[${f##*/}]=${u:-$RELEASE}
 done
 
-# Current Debian versions from rmadison
+# Current Debian versions from rmadison, kept per suite
 srcs=$(printf '%s\n' "${!pub[@]}" "${!rec[@]}" | sort -u)
+suites=$(printf '%s\n' "$RELEASE" "$RELEASE-updates" "$RELEASE-security" "${rec[@]}" | sort -u | paste -sd,)
 declare -A deb=()
-while IFS='|' read -r s v _; do
-	s=${s// /} v=${v// /}
+while IFS='|' read -r s v u _; do
+	s=${s// /} v=${v// /} u=${u// /} u=${u/#$RELEASE-*/$RELEASE} # Pockets are the release reference
 	[[ $v =~ ^[0-9][0-9A-Za-z.:~+-]*$ ]] || continue
-	if [ -z "${deb[$s]:-}" ] || dpkg --compare-versions "$v" gt "${deb[$s]}"; then
-		deb[$s]=$v
+	if [ -z "${deb[$u/$s]:-}" ] || dpkg --compare-versions "$v" gt "${deb[$u/$s]}"; then
+		deb[$u/$s]=$v
 	fi
-done < <(rmadison -u qa -a source -s trixie,trixie-updates,trixie-security $srcs)
+done < <(rmadison -u qa -a source -s "$suites" $srcs)
 [ ${#deb[@]} -gt 0 ] || die "madison returned nothing"
 
 {
 	printf 'SOURCE\tWMT-OS\tDEBIAN\tRECIPE\tSTATUS\n'
 	for s in $srcs; do
-		o=${pub[$s]:-} d=${deb[$s]:-} r=yes
+		o=${pub[$s]:-} d=${deb[${rec[$s]:-$RELEASE}/$s]:-} r=yes
 		[ -n "${rec[$s]:-}" ] || r=no
 		base=${o/[+~]wmtos+([0-9])/} # Strip wmtos revision suffix
 		if [ -z "$o" ]; then
