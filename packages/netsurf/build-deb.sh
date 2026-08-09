@@ -9,7 +9,7 @@
 set -eu
 . "$(dirname "$0")/../lib.sh"
 
-WMTOS_REV=1
+WMTOS_REV=2
 
 build_deb netsurf <<-'EOF'
 	patch -p1 < /input/01-gtk2.patch
