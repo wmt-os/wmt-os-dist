@@ -1,5 +1,6 @@
-Types: deb-src
+Types: deb deb-src
 URIs: https://deb.debian.org/debian
 Suites: sid
 Components: main
+Architectures: all
 Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp

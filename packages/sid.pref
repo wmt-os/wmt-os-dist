@@ -1,0 +1,7 @@
+Package: *
+Pin: release n=sid
+Pin-Priority: -1
+
+Package: debhelper libdebhelper-perl
+Pin: release n=sid
+Pin-Priority: 990

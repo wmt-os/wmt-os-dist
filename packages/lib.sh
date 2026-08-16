@@ -11,8 +11,11 @@ renice "$NICE" -p $$ >/dev/null 2>&1 || true
 build_deb() {
 	local recipe; recipe=$(cat)
 	local version='$base+wmtos'$WMTOS_REV'${v#$base}' hooks=()
-	[ $# -gt 1 ] && version='$v~wmtos'$WMTOS_REV # Backport if suite is defined
 	[ -d "$SRC/input" ] && hooks=(--customize-hook="copy-in $SRC/input /")
+
+	# Backport if suite is defined, pinning it before apt runs
+	[ $# -gt 1 ] && version='$v~wmtos'$WMTOS_REV \
+		hooks+=(--setup-hook="copy-in $SRC/../$2.pref /etc/apt/preferences.d")
 
 	mkdir -p "$OUT"
 	rm -f "$OUT"/*.deb
