@@ -19,7 +19,7 @@ Package names establish identity, while version numbers dictate upgrade ordering
 | Backport of newer upstream | `<new version>-1~wmtosN` |
 | Own upstream (like `xf86-video-wmt`) | its own `x.y.z` |
 
-The `+wmtosN` marker sits ahead of any `+debXuY` extension, keeping rebuilds against Debian security updates newer than what they replace. Devices pin the archive at priority 1001 so our packages always take precedence over Debian.
+The `+wmtosN` marker sits ahead of any `+debXuY` extension, keeping rebuilds against Debian security updates newer than what they replace. Devices pin the archive at priority 990 so our packages always take precedence over Debian.
 
 ## Publishing
 
