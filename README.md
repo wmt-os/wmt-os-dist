@@ -5,7 +5,7 @@ Publishing tools and external packages for [WMT OS](https://github.com/wmt-os/wm
 * APT repository: [apt.wmt-os.org](https://apt.wmt-os.org/)
 * Disk images: [releases.wmt-os.org](https://releases.wmt-os.org/)
 
-The core build system produces the internal packages (kernel, metapackage, `wmt-boot`, `wmt-os-base`). This repository carries `publish-deb.sh` and `publish-img.sh`, the APT repository and disk image publishers, plus external packages under `packages/`. Each package has its own `build-deb.sh` recipe over the shared `lib.sh`.
+The core build system produces the internal packages (kernel, metapackage, `wmt-boot`, `wmt-os-base`). This repository carries `publish-deb.sh` and `publish-img.sh`, the APT repository and disk image publishers, plus external packages under `packages/`, each built by `packages/build-deb.sh` from its `conf`.
 
 ## Versioning
 

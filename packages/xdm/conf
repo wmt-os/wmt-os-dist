@@ -1,0 +1,2 @@
+REV=2
+RECIPE='mv /xdm/wmt-os*.xpm debian/local/'

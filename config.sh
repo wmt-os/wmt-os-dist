@@ -4,6 +4,8 @@
 
 export NICE="${NICE:-19}" # Niceness value
 
+export TARGET="${TARGET:-trixie}" # Suite packages are built against
+
 export BUILDER_NAME="${BUILDER_NAME:-WMT OS Builder}"
 export BUILDER_EMAIL="${BUILDER_EMAIL:-root@wmt-os.org}"
 

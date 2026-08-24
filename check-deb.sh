@@ -16,8 +16,8 @@ export LC_ALL=C
 shopt -s extglob
 
 SRC=$(cd "$(dirname "$0")" && pwd)
-RELEASE="${RELEASE:-trixie}"
-INDEX="${INDEX:-https://apt.wmt-os.org/dists/$RELEASE/main/binary-armel/Packages}"
+. "$SRC/config.sh"
+INDEX="${INDEX:-https://apt.wmt-os.org/dists/$TARGET/main/binary-armel/Packages}"
 
 die() { echo "check-deb: $*" >&2; exit 1; }
 
@@ -40,18 +40,19 @@ done < <(tbl-dctrl -c Source -c Package -c Version <<<"$index")
 
 # Package recipes on disk, with the suite each builds from
 declare -A rec=()
-for f in "$SRC"/packages/*/build-deb.sh; do
+for f in "$SRC"/packages/*/conf; do
 	[ -e "$f" ] || break
-	u=$(awk '$1 == "build_deb" && $3 ~ /^[a-z]/ { print $3; exit }' "$f")
-	f=${f%/build-deb.sh}; rec[${f##*/}]=${u:-$RELEASE}
+	SUITE=
+	. "$f"
+	f=${f%/conf}; rec[${f##*/}]=${SUITE:-$TARGET}
 done
 
 # Current Debian versions from rmadison, kept per suite
 srcs=$(printf '%s\n' "${!pub[@]}" "${!rec[@]}" | sort -u)
-suites=$(printf '%s\n' "$RELEASE" "$RELEASE-updates" "$RELEASE-security" "${rec[@]}" | sort -u | paste -sd,)
+suites=$(printf '%s\n' "$TARGET" "$TARGET-updates" "$TARGET-security" "${rec[@]}" | sort -u | paste -sd,)
 declare -A deb=()
 while IFS='|' read -r s v u _; do
-	s=${s// /} v=${v// /} u=${u// /} u=${u/#$RELEASE-*/$RELEASE} # Pockets are the release reference
+	s=${s// /} v=${v// /} u=${u// /} u=${u/#$TARGET-*/$TARGET} # Pockets are the release reference
 	[[ $v =~ ^[0-9][0-9A-Za-z.:~+-]*$ ]] || continue
 	if [ -z "${deb[$u/$s]:-}" ] || dpkg --compare-versions "$v" gt "${deb[$u/$s]}"; then
 		deb[$u/$s]=$v
@@ -62,7 +63,7 @@ done < <(rmadison -u qa -a source -s "$suites" $srcs)
 {
 	printf 'SOURCE\tWMT-OS\tDEBIAN\tRECIPE\tSTATUS\n'
 	for s in $srcs; do
-		o=${pub[$s]:-} d=${deb[${rec[$s]:-$RELEASE}/$s]:-} r=yes
+		o=${pub[$s]:-} d=${deb[${rec[$s]:-$TARGET}/$s]:-} r=yes
 		[ -n "${rec[$s]:-}" ] || r=no
 		base=${o/[+~]wmtos+([0-9])/} # Strip wmtos revision suffix
 		if [ -z "$o" ]; then

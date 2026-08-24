@@ -1,0 +1,6 @@
+REV=2
+INCLUDE=imagemagick
+# Reuse each application's window icon as its desktop entry icon
+RECIPE='magick adie/big_gif.gif debian/adie.xpm
+magick calculator/bigcalc.gif debian/calculator.xpm
+magick shutterbug/shutterbug.gif debian/shutterbug.xpm'
