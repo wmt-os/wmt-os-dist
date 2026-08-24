@@ -1,7 +1,7 @@
 Package: *
-Pin: release n=sid
+Pin: release n=forky
 Pin-Priority: -1
 
 Package: debhelper libdebhelper-perl
-Pin: release n=sid
+Pin: release n=forky
 Pin-Priority: 990
