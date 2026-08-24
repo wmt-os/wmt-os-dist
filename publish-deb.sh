@@ -14,6 +14,8 @@
 set -eu
 export LC_ALL=C
 
+die() { echo "publish-deb: $*" >&2; exit 1; }
+
 SRC=$(cd "$(dirname "$0")" && pwd)
 . "$SRC/config.sh"
 
@@ -27,9 +29,7 @@ exec 9<"$0"; flock 9
 
 # Sync from the archive (authoritative)
 if ! rsync -a --delete "$ARCHIVE/" "$MIRROR/" 2>/dev/null; then
-	case $ARCHIVE in
-	*:*) echo "publish-deb: cannot sync from $ARCHIVE" >&2; exit 1 ;;
-	esac
+	[[ $ARCHIVE == *:* ]] && die "cannot sync from $ARCHIVE"
 fi
 mkdir -p "$POOL" "$DIST/main/binary-armel"
 
@@ -68,7 +68,7 @@ for deb in "$@"; do
 		echo "error: $pkg $ver is older than published $cur" >&2; err=1
 	fi
 done
-[ -z "$err" ] || { echo "publish-deb: refused (archive untouched)" >&2; exit 1; }
+[ -z "$err" ] || die "refused (archive untouched)"
 if [ $# -gt 0 ] && [ ${#publish[@]} -eq 0 ]; then
 	echo "nothing new to publish"; exit 0
 fi
@@ -95,7 +95,7 @@ gzip -9nc "$DIST/main/binary-armel/Packages" > "$DIST/main/binary-armel/Packages
 gpg --batch --yes -u "$KEYID" --clearsign -o "$DIST/InRelease" "$DIST/Release"
 
 # Push to the archive: new pool, index swap, then delete old
-case $ARCHIVE in *:*) ;; *) mkdir -p "$ARCHIVE" ;; esac
+[[ $ARCHIVE == *:* ]] || mkdir -p "$ARCHIVE"
 rsync -a "$MIRROR/pool" "$ARCHIVE/"
 rsync -ac --delete "$MIRROR/dists" "$ARCHIVE/" # -c: regenerated indexes fool quick check
 rsync -a --delete "$MIRROR/pool" "$ARCHIVE/"

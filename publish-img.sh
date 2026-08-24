@@ -13,10 +13,12 @@
 set -eu
 export LC_ALL=C
 
+die() { echo "publish-img: $*" >&2; exit 1; }
+
 SRC=$(cd "$(dirname "$0")" && pwd)
 . "$SRC/config.sh"
 
-[ $# -gt 0 ] || exit 1
+[ $# -gt 0 ] || die "usage: publish-img IMAGE"
 
 imgname() { [[ $1 =~ ^[^[:space:]]+-[0-9]{8}_[0-9]{6}(\.img\.[a-z0-9]+)$ ]]; }
 
@@ -25,7 +27,7 @@ exec 9<"$0"; flock 9
 # List published images from the remote (authoritative)
 if ! list=$(rsync --list-only "$RELEASES/" 2>/dev/null); then
 	if [[ $RELEASES == *:* ]] || [ -e "$RELEASES" ]; then
-		echo "publish-img: cannot list $RELEASES" >&2; exit 1
+		die "cannot list $RELEASES"
 	fi
 	list=
 fi
@@ -50,7 +52,7 @@ for img in "$@"; do
 		echo "error: bad or missing checksum: $name.sha256" >&2; err=1
 	fi
 done
-[ -z "$err" ] || { echo "publish-img: refused (site untouched)" >&2; exit 1; }
+[ -z "$err" ] || die "refused (site untouched)"
 
 # Queue uploads with their checksums; a republished name must match the published content
 upload=() err=
@@ -60,18 +62,17 @@ for img in "$@"; do
 		echo "publish: $name"; upload+=("$img"*)
 		continue
 	fi
-	differs=$(rsync -nc --out-format=%n "$img" "$RELEASES/") ||
-		{ echo "publish-img: cannot compare with $RELEASES" >&2; exit 1; }
+	differs=$(rsync -nc --out-format=%n "$img" "$RELEASES/") || die "cannot compare with $RELEASES"
 	if [ -z "$differs" ]; then
 		echo "skip: $name already published"
 	else
 		echo "error: $name differs from published" >&2; err=1
 	fi
 done
-[ -z "$err" ] || { echo "publish-img: refused (site untouched)" >&2; exit 1; }
+[ -z "$err" ] || die "refused (site untouched)"
 
 # Push to the release site
-case $RELEASES in *:*) ;; *) mkdir -p "$RELEASES" ;; esac
+[[ $RELEASES == *:* ]] || mkdir -p "$RELEASES"
 if [ ${#upload[@]} -gt 0 ]; then
 	rsync -a "${upload[@]}" "$RELEASES/"
 fi

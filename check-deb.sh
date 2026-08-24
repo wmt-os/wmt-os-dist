@@ -4,10 +4,9 @@
 # Compare published Debian-derived packages against Debian's current versions
 #
 # Usage:
-#   ./check-deb.sh              # Table: SOURCE WMT-OS DEBIAN RECIPE STATUS
-#   ./check-deb.sh | ansi2txt   # Plain text
+#   ./check-deb.sh    # Table: SOURCE WMT-OS DEBIAN RECIPE STATUS
 #
-# Requires: curl dpkg devscripts dctrl-tools bsdextrautils colorized-logs
+# Requires: curl dpkg devscripts dctrl-tools bsdextrautils
 #
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
@@ -21,8 +20,8 @@ INDEX="${INDEX:-https://apt.wmt-os.org/dists/$TARGET/main/binary-armel/Packages}
 
 die() { echo "check-deb: $*" >&2; exit 1; }
 
-# Terminal colors for status output
-{ red=$(tput setaf 1) green=$(tput setaf 2) yellow=$(tput setaf 3) off=$(tput sgr0); } 2>/dev/null || :
+red= green= yellow= off=
+[ -t 1 ] && { red=$(tput setaf 1) green=$(tput setaf 2) yellow=$(tput setaf 3) off=$(tput sgr0); } 2>/dev/null || true
 
 # Published package versions from repository index
 index=$(curl -fsSm30 "$INDEX") || die "cannot fetch $INDEX"
