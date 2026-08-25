@@ -1,0 +1,16 @@
+Description: Enable fixed-point decoding for installed libraries
+ Upstream applies FIXED_POINT only to faad_fixed and faad_drm_fixed,
+ which it never installs. Apply it to faad and faad_drm as well, so
+ the installed decoder does not rely on floating-point emulation.
+Author: Logan Russell <me@lrussell.net>
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -171,7 +171,7 @@
+ )
+ endforeach()
+ 
+-foreach(LIB faad_fixed faad_drm_fixed)
++foreach(LIB faad faad_drm faad_fixed faad_drm_fixed)
+ target_compile_definitions(${LIB} PRIVATE
+   FIXED_POINT
+ )
