@@ -1,0 +1,18 @@
+Description: Draw menu icons on partial repaints at 16-bit depth
+ GraphicsBuffer::paint gives Graphics the damage rectangle size instead of the
+ window dimensions. YXImage::composite drops images lying outside that extent,
+ so repainting a menu row loses its icon. Depths 24 and 32 bypass this path
+ because formatForDepth provides Render formats for them. Pass the window
+ dimensions to Graphics so the extent covers the full backing pixmap.
+Author: Logan Russell <me@lrussell.net>
+--- a/src/ypaint.cc
++++ b/src/ypaint.cc
+@@ -1161,7 +1161,7 @@
+ 
+     fNesting += 1;
+ 
+-    Graphics gfx(pixmap, w, h, depth);
++    Graphics gfx(pixmap, window()->width(), window()->height(), depth);
+ 
+     if (fNesting == 1) {
+         if (fClipping || x || y ||
