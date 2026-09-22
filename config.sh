@@ -9,6 +9,6 @@ export TARGET="${TARGET:-trixie}" # Suite packages are built against
 export BUILDER_NAME="${BUILDER_NAME:-WMT OS Builder}"
 export BUILDER_EMAIL="${BUILDER_EMAIL:-root@wmt-os.org}"
 
-export ARCHIVE="${ARCHIVE:-/tmp/wmt-os-repo}" # APT archive rsync target (local or remote)
-export RELEASES="${RELEASES:-/tmp/wmt-os-releases}" # Release images rsync target (local or remote)
+export ARCHIVE="${ARCHIVE:-webroot:apt.wmt-os.org}" # APT archive rsync target (local or remote)
+export RELEASES="${RELEASES:-webroot:releases.wmt-os.org}" # Release images rsync target (local or remote)
 export KEYID="${KEYID:-C88AB20897CC3653}" # Archive signing key in GPG
