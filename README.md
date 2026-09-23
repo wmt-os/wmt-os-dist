@@ -5,7 +5,7 @@ Publishing tools and external packages for [WMT OS](https://github.com/wmt-os/wm
 * APT repository: [apt.wmt-os.org](https://apt.wmt-os.org/)
 * Disk images: [releases.wmt-os.org](https://releases.wmt-os.org/)
 
-The core build system produces the internal packages (kernel, metapackage, `wmt-boot`, `wmt-os-base`). This repository carries `publish-deb.sh` and `publish-img.sh`, the APT repository and disk image publishers, plus external packages under `packages/`, each built by `packages/build-deb.sh` from its `conf`. `check-deb.sh` compares the published rebuilds against Debian's current versions.
+The core build system produces the internal packages (kernel, metapackage, `wmt-boot`, `wmt-os-base`). This repository carries `publish-deb.sh` and `publish-img.sh`, the APT repository and disk image publishers, plus external packages under `packages/`, each built by `packages/build-deb.sh` from its `conf`. A recipe either rebuilds a Debian source package or carries its own `debian/` for an upstream release. `check-deb.sh` compares the published rebuilds against Debian's current versions.
 
 ## Versioning
 
@@ -17,7 +17,7 @@ Package names establish identity, while version numbers dictate upgrade ordering
 | Other internal, auto-built | `<stamp>+<12-hex content key>` |
 | Shadow of Debian package | `<Debian version>+wmtosN` |
 | Backport of newer upstream | `<new version>-1~wmtosN` |
-| Own upstream (like `xf86-video-wmt`) | its own `x.y.z` |
+| Own upstream (like `xf86-video-wmt`) | `<upstream version>-N` |
 
 The `+wmtosN` marker sits ahead of any `+debXuY` extension, keeping rebuilds against Debian security updates newer than what they replace. Devices pin the archive at priority 990 so our packages always take precedence over Debian.
 

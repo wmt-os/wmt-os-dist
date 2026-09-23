@@ -41,6 +41,7 @@ done < <(tbl-dctrl -c Source -c Package -c Version <<<"$index")
 declare -A rec=()
 for f in "$SRC"/packages/*/conf; do
 	[ -e "$f" ] || break
+	[ ! -d "${f%conf}debian" ] || continue # Own packaging, not in Debian
 	SUITE=
 	. "$f"
 	f=${f%/conf}; rec[${f##*/}]=${SUITE:-$TARGET}
