@@ -1,3 +1,11 @@
+xserver-xorg-video-wmt (1.4.1-1) trixie; urgency=medium
+
+  * Wake a blanked panel before leasing it, so the lessee gets a running mode.
+  * Reapply the DPMS mode X last requested once a lease ends.
+  * Tidy the license notices.
+
+ -- Logan Russell <me@lrussell.net>  Wed, 30 Sep 2026 02:31:38 -0400
+
 xserver-xorg-video-wmt (1.4.0-1) trixie; urgency=medium
 
   * Lease the CRTC and its output to RandR 1.6 clients.
