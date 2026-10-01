@@ -1,0 +1,28 @@
+Source: wmt-play
+Section: video
+Priority: optional
+Maintainer: Logan Russell <me@lrussell.net>
+Build-Depends:
+ debhelper-compat (= 13),
+ pkgconf,
+ libasound2-dev,
+ libdrm-dev,
+ libxcb1-dev,
+ libxcb-randr0-dev,
+ libxcb-screensaver0-dev,
+ libxcb-keysyms1-dev,
+ x11proto-dev,
+Standards-Version: 4.7.2
+Rules-Requires-Root: no
+Homepage: https://github.com/wmt-os/wmt-play
+
+Package: wmt-play
+Architecture: armel
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Built-Using: ffmpeg (= ${ffmpeg:Version})
+Description: MJPEG video player for the WonderMedia WM8505
+ wmt-play is a fullscreen video player for the WonderMedia WM8505,
+ playing MJPEG AVI files.  The video hardware decodes each frame and
+ scales it to the panel.
