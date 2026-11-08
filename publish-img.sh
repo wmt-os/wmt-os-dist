@@ -15,8 +15,8 @@ export LC_ALL=C
 
 die() { echo "publish-img: $*" >&2; exit 1; }
 
-SRC=$(cd "$(dirname "$0")" && pwd)
-. "$SRC/config.sh"
+BASE_DIR=$(cd "$(dirname "$0")" && pwd)
+. "$BASE_DIR/config.sh"
 
 [ $# -gt 0 ] || die "usage: publish-img IMAGE"
 

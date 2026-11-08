@@ -21,7 +21,8 @@ renice "$NICE" -p $$ >/dev/null 2>&1 || true
 [ $# -eq 1 ] || die "usage: build-deb PACKAGE"
 
 export PKG=${1%/} REV= SUITE= RECIPE=
-SRC=$BASE_DIR/packages/$PKG tree=
+SRC=$BASE_DIR/packages/$PKG
+tree=
 
 [ -f "$SRC/conf" ] || die "missing recipe"
 

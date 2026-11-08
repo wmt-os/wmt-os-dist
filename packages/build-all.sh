@@ -1,4 +1,9 @@
 #!/bin/bash
+# Build every external package
+#
+# Usage:
+#   ./build-all.sh
+#
 # Copyright (C) 2026 Logan Russell <me@lrussell.net>
 
 set -eu

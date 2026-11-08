@@ -14,8 +14,8 @@ set -eu
 export LC_ALL=C
 shopt -s extglob
 
-SRC=$(cd "$(dirname "$0")" && pwd)
-. "$SRC/config.sh"
+BASE_DIR=$(cd "$(dirname "$0")" && pwd)
+. "$BASE_DIR/config.sh"
 INDEX="${INDEX:-https://apt.wmt-os.org/dists/$TARGET/main/binary-armel/Packages}"
 
 die() { echo "check-deb: $*" >&2; exit 1; }
@@ -39,7 +39,7 @@ done < <(tbl-dctrl -c Source -c Package -c Version <<<"$index")
 
 # Package recipes on disk, with the suite each builds from
 declare -A rec=()
-for f in "$SRC"/packages/*/conf; do
+for f in "$BASE_DIR"/packages/*/conf; do
 	[ -e "$f" ] || break
 	[ ! -d "${f%conf}debian" ] || continue # Own packaging, not in Debian
 	SUITE=

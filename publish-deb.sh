@@ -5,7 +5,7 @@
 #
 # Usage:
 #   ./publish-deb.sh path/to/*.deb    # Validate and publish
-#   ./publish-deb.sh                  # Reindex and sign (non-destructive / initialize empty)
+#   ./publish-deb.sh                  # Reindex and sign (non-destructive)
 #
 # Requires: apt-utils dpkg gnupg rsync
 #
@@ -16,10 +16,10 @@ export LC_ALL=C
 
 die() { echo "publish-deb: $*" >&2; exit 1; }
 
-SRC=$(cd "$(dirname "$0")" && pwd)
-. "$SRC/config.sh"
+BASE_DIR=$(cd "$(dirname "$0")" && pwd)
+. "$BASE_DIR/config.sh"
 
-MIRROR="$SRC/mirror"
+MIRROR="$BASE_DIR/mirror"
 POOL="$MIRROR/pool/main"
 DIST="$MIRROR/dists/trixie"
 
@@ -89,9 +89,9 @@ if [ ${#publish[@]} -gt 0 ]; then
 fi
 
 # Rebuild metadata and sign
-(cd "$MIRROR" && apt-ftparchive generate "$SRC/apt-ftparchive.conf" >/dev/null)
+(cd "$MIRROR" && apt-ftparchive generate "$BASE_DIR/apt-ftparchive.conf" >/dev/null)
 gzip -9nc "$DIST/main/binary-armel/Packages" > "$DIST/main/binary-armel/Packages.gz"
-(cd "$MIRROR" && apt-ftparchive -c "$SRC/apt-ftparchive.conf" release dists/trixie) > "$DIST/Release"
+(cd "$MIRROR" && apt-ftparchive -c "$BASE_DIR/apt-ftparchive.conf" release dists/trixie) > "$DIST/Release"
 gpg --batch --yes -u "$KEYID" --clearsign -o "$DIST/InRelease" "$DIST/Release"
 
 # Push to the archive: new pool, index swap, then delete old
